@@ -24,12 +24,12 @@ readonly class LoginService
      */
     public function run($dto)
     {
-//        $cacheKey = 'user_' . $dto->email;
-//        $user = Cache::get($cacheKey);
-//
-//        if (!$user) {
-//            Cache::put($cacheKey, $user, now()->addMinutes(10));
-//        }
+        $cacheKey = 'user_' . $dto->email;
+        $user = Cache::get($cacheKey);
+
+        if (!$user) {
+            Cache::put($cacheKey, $user, now()->addMinutes(10));
+        }
 
         $user = $this->userRepository->findByEmail($dto->email);
         $check = password_verify($dto->password, $user->password);
