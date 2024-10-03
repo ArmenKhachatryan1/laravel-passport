@@ -8,7 +8,6 @@ use App\Repository\Auth\UserRepository;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redis;
 
 readonly class LoginService
 {
@@ -33,7 +32,6 @@ readonly class LoginService
 
         $user = $this->userRepository->findByEmail($dto->email);
         $check = password_verify($dto->password, $user->password);
-
         if (!$check) {
             throw new PasswordDoesNotMatchException();
         }
