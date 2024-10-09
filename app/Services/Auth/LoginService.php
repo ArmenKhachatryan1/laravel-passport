@@ -27,10 +27,13 @@ readonly class LoginService
         $user = Cache::get($cacheKey);
 
         if (!$user) {
-            Cache::put($cacheKey, $user, now()->addMinutes(10));
+            $user = $this->userRepository->findByEmail($dto->email);
+
+            if ($user) {
+                Cache::put($cacheKey, $user, now()->addHour());
+            }
         }
 
-        $user = $this->userRepository->findByEmail($dto->email);
         $check = password_verify($dto->password, $user->password);
         if (!$check) {
             throw new PasswordDoesNotMatchException();

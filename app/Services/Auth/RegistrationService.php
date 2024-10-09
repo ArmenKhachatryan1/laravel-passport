@@ -15,7 +15,6 @@ readonly class RegistrationService
 
     public function run($dto): User
     {
-        dd(56);
         return $this->registrationRepository->registerUser($dto->toArray());
     }
 }
