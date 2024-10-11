@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -11,6 +12,8 @@ Route::prefix('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 });
 
-Route::get('/guest', [ClientController::class, 'getClient'])->middleware('auth:api');
 
-
+Route::middleware('auth:api')->group(function () {
+    Route::get('/guest', [ClientController::class, 'getClient']);
+    Route::get('/users/download', [UserController::class, 'getAllUsers']);
+});
