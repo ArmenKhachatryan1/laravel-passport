@@ -10,6 +10,7 @@
         "laravel/passport": "^12.0",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "mateusjunges/laravel-kafka": "^2.3",
         "predis/predis": "^2.0",
         "spatie/laravel-data": "^4.9",
         "spatie/laravel-permission": "^6.9"
