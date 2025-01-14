@@ -7,20 +7,18 @@ use App\Dto\Auth\RegistrationDto;
 use App\Exception\Auth\PasswordDoesNotMatchException;
 use App\Http\Requests\AuthRequest\LoginRequest;
 use App\Http\Requests\AuthRequest\RegisterRequest;
-use App\Http\Resources\Auth\RegisterResource;
 use App\Services\Auth\LoginService;
 use App\Services\Auth\LogoutService;
 use App\Services\Auth\RegistrationService;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
     /**
      * @throws PasswordDoesNotMatchException
-     * @throws ConnectionException
      */
-    public function login(LoginRequest $request, LoginService $loginService)
+    public function login(LoginRequest $request, LoginService $loginService): JsonResponse
     {
         $dto = LoginDto::fromRequest($request);
 
@@ -30,10 +28,10 @@ class AuthController extends Controller
     public function register(
         RegisterRequest $request,
         RegistrationService $registrationService
-    ): RegisterResource {
+    ): JsonResponse {
         $dto = RegistrationDto::fromRequest($request);
 
-        return new RegisterResource($registrationService->run($dto));
+        return response()->json($registrationService->run($dto), Response::HTTP_OK);
     }
 
     public function logout(LogoutService $logoutService): JsonResponse
