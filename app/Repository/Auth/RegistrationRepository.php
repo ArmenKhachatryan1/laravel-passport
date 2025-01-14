@@ -6,8 +6,13 @@ use App\Models\User;
 
 class RegistrationRepository
 {
-    public function registerUser(array $data): User
+    public function registerUser(array $data): string
     {
-        return User::query()->create($data);
+        $register = User::query()->create($data);
+
+        if (!$register) {
+            return 'Incorrect date';
+        }
+        return 'Success';
     }
 }

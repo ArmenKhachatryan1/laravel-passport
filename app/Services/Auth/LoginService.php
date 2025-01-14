@@ -5,9 +5,9 @@ namespace App\Services\Auth;
 use App\Exception\Auth\PasswordDoesNotMatchException;
 use App\Repository\Auth\PassportClientRepository;
 use App\Repository\Auth\UserRepository;
-use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 readonly class LoginService
 {
@@ -19,9 +19,8 @@ readonly class LoginService
 
     /**
      * @throws PasswordDoesNotMatchException
-     * @throws ConnectionException
      */
-    public function run($dto)
+    public function run($dto): JsonResponse
     {
         $cacheKey = 'user_' . $dto->email;
         $user = Cache::get($cacheKey);
@@ -35,6 +34,7 @@ readonly class LoginService
         }
 
         $check = password_verify($dto->password, $user->password);
+
         if (!$check) {
             throw new PasswordDoesNotMatchException();
         }
@@ -43,18 +43,27 @@ readonly class LoginService
 
         $oClient = $this->passportClientRepository->getById($oClientId);
 
-        $data = [
+        $tokenRequest = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'password',
             'client_id' => $oClient->id,
             'client_secret' => $oClient->secret,
             'username' => $dto->email,
             'password' => $dto->password,
             'scope' => '*',
-        ];
-        $response = Http::asForm()->post(config('app.url') . '/oauth/token', $data);
-        $response = json_decode($response->getBody()->getContents());
-        $response->user = $user;
+        ]);
 
-        return $response;
+        $response = app()->handle($tokenRequest);
+
+        if ($response->getStatusCode() !== 200) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        $response = json_decode($response->getContent(), true);
+
+        return response()->json([
+            'access_token' => $response['access_token'],
+            'refresh_token' => $response['refresh_token'],
+            'expires_in' => $response['expires_in'],
+        ]);
     }
 }

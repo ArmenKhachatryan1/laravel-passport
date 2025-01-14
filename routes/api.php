@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,6 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:api')->group(function () {
     Route::get('/guest', [ClientController::class, 'getClient']);
     Route::get('/users/download', [UserController::class, 'getAllUsers']);
+    Route::get('/orders', [OrderController::class, 'getOrders']);
 });
+
